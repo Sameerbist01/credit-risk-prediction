@@ -7,7 +7,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 import joblib
-
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    classification_report,
+    confusion_matrix,
+    roc_auc_score
+)
 # 1. Load Data
 df = pd.read_csv('credit_risk_dataset.csv')
 
@@ -47,6 +55,24 @@ model_pipeline = Pipeline(steps=[
 # 5. Train Model
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 model_pipeline.fit(X_train, y_train)
+# Evaluate Model
+y_pred = model_pipeline.predict(X_test)
+y_prob = model_pipeline.predict_proba(X_test)[:, 1]
+
+print("\n--- Model Evaluation ---")
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Precision:", precision_score(y_test, y_pred))
+print("Recall:", recall_score(y_test, y_pred))
+print("F1 Score:", f1_score(y_test, y_pred))
+
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+print("ROC-AUC:", roc_auc_score(y_test, y_prob))
 
 # 6. Save the Full Pipeline Artifact
 joblib.dump(model_pipeline, 'credit_risk_model.pkl')
